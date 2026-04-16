@@ -13,7 +13,7 @@
         const section = document.getElementById(id);
         const top = section.offsetTop - 64;
         window.scrollTo({ top: top, behavior: 'smooth' });
-      }, 500);
+      }, 100);
     }
     return false;
   }
