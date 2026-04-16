@@ -6,17 +6,14 @@
     const el = document.getElementById('nav-' + id);
     if (el) el.classList.add('active');
 
-    
     if (id === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const section = document.getElementById(id);
-          const top = section.offsetTop - 64;
-          window.scrollTo({ top: top, behavior: 'smooth' });
-        });
-      });
+      setTimeout(() => {
+        const section = document.getElementById(id);
+        const top = section.offsetTop - 64;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }, 50);
     }
     return false;
   }
