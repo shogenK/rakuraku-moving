@@ -9,11 +9,13 @@
     if (id === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      setTimeout(() => {
-        const section = document.getElementById(id);
-        const top = section.offsetTop - 64;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }, 10);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const section = document.getElementById(id);
+          const top = section.offsetTop - 64;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        });
+      });
     }
     return false;
   }
