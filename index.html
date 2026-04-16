@@ -92,6 +92,67 @@
     </div>
   </section>
 
+  <!-- お客様の声プレビュー -->
+  <section class="reviews-preview">
+    <div class="reviews-preview-inner">
+      <div class="section-header">
+        <div class="eyebrow">お客様の声</div>
+        <h2>ご利用いただいたお客様より</h2>
+      </div>
+      <div class="overall-rating-bar">
+        <div class="overall-score">4.5</div>
+        <div class="overall-stars-wrap">
+          <div class="stars-container">
+            <div class="stars-filled" style="width:90%">★★★★★</div>
+            <div class="stars-empty">★★★★★</div>
+          </div>
+          <div class="overall-count">72件の評価</div>
+        </div>
+      </div>
+      <div class="review-grid">
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">田</div>
+            <div class="review-meta">
+              <div class="review-name">田中 亜美 様</div>
+              <div class="review-date">2024年11月</div>
+            </div>
+            <div class="review-rating-stars"><span>★★★★★</span></div>
+          </div>
+          <span class="review-plan-badge">スタンダード</span>
+          <div class="review-comment">急な転勤で1週間前のご連絡にも快く対応いただきました。スタッフの方がとても丁寧で、大型冷蔵庫も傷なく運んでいただき大変満足しています。</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">佐</div>
+            <div class="review-meta">
+              <div class="review-name">佐藤 健太 様</div>
+              <div class="review-date">2024年10月</div>
+            </div>
+            <div class="review-rating-stars"><span>★★★★★</span></div>
+          </div>
+          <span class="review-plan-badge">ミニプラン</span>
+          <div class="review-comment">料金がわかりやすく、見積もり通りの金額で安心できました。当日のスタッフの方も明るく丁寧で、引越しがスムーズに終わりました。</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar">伊</div>
+            <div class="review-meta">
+              <div class="review-name">伊藤 美咲 様</div>
+              <div class="review-date">2024年9月</div>
+            </div>
+            <div class="review-rating-stars"><span>★★★★★</span></div>
+          </div>
+          <span class="review-plan-badge">スタンダード</span>
+          <div class="review-comment">女性の一人暮らしの引越しで不安でしたが、スタッフの方が終始丁寧に対応してくださり安心できました。壁の養生もしっかりしていただき傷ゼロで完了しました。</div>
+        </div>
+      </div>
+      <div class="reviews-more-link">
+        <a href="#" onclick="showSection('reviews')" class="btn-primary">すべてのレビューを見る</a>
+      </div>
+    </div>
+  </section>
+
   <section class="pricing">
     <div class="pricing-inner">
       <div class="section-header">
@@ -396,6 +457,45 @@
       <a href="#" class="btn-primary" onclick="showSection('contact')">お問い合わせはこちら</a>
     </div>
   </div>
+</div>
+
+<!-- ===== REVIEWS ===== -->
+<div class="section" id="reviews">
+  <div class="page-title-bar">
+    <div class="page-title-inner">
+      <h1>お客様の声</h1>
+      <p>ご利用いただいたお客様からのレビューをご紹介します</p>
+    </div>
+  </div>
+
+  <div class="reviews-page-wrap">
+    <div class="overall-rating-section">
+      <div class="overall-score-big">4.5</div>
+      <div class="overall-stars-big">
+        <div class="stars-container" style="font-size:2rem">
+          <div class="stars-filled" style="width:90%">★★★★★</div>
+          <div class="stars-empty">★★★★★</div>
+        </div>
+      </div>
+      <div class="overall-count-big">72件の評価</div>
+    </div>
+
+    <div id="reviews-container"></div>
+
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <div class="cta-banner">
+    <h2>まずは無料でお見積もり</h2>
+    <p>ご入力いただくだけで概算金額がすぐに確認できます</p>
+    <a href="#" class="btn-white" onclick="showSection('estimate')">見積もりを試してみる</a>
+  </div>
+
+  <footer>
+    <strong>らくらく引越し便</strong><br>
+    〒810-0001 福岡県福岡市中央区天神1-1-1 ／ TEL: 092-000-0000<br>
+    営業時間 9:00〜18:00（土日・祝日対応可） ／ © 2024 らくらく引越し便
+  </footer>
 </div>
 
 <!-- ===== CONTACT ===== -->

@@ -809,6 +809,172 @@ header {
     }
     footer strong { color: white; }
 
+    /* ===== REVIEWS ===== */
+    .reviews-preview {
+      background: var(--bg);
+      padding: 4rem 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .reviews-preview-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* 星評価 */
+    .stars-container {
+      position: relative;
+      display: inline-block;
+      font-size: 1.5rem;
+      line-height: 1;
+      letter-spacing: 3px;
+    }
+    .stars-empty { color: #D8E4EF; }
+    .stars-filled {
+      position: absolute;
+      top: 0; left: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      color: #F5821F;
+    }
+
+    /* 総合評価バー */
+    .overall-rating-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+    .overall-score {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .overall-stars-wrap { text-align: center; }
+    .overall-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* レビューグリッド */
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .review-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .review-card:hover { box-shadow: 0 6px 24px rgba(26,79,138,0.1); transform: translateY(-2px); }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .review-avatar {
+      width: 42px; height: 42px;
+      min-width: 42px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+    }
+    .review-meta { flex: 1; }
+    .review-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+    .review-date { font-size: 0.75rem; color: var(--text-muted); }
+    .review-rating-stars { color: #F5821F; font-size: 0.95rem; letter-spacing: 1px; }
+    .review-plan-badge {
+      display: inline-block;
+      background: #EEF4FB;
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+    }
+    .review-comment { font-size: 0.88rem; color: var(--text-muted); line-height: 1.8; }
+
+    .reviews-more-link { text-align: center; margin-top: 0.5rem; }
+
+    /* レビューページ */
+    #reviews { min-height: 100vh; }
+    .reviews-page-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+    .overall-rating-section {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+    }
+    .overall-score-big {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .overall-stars-big { margin-bottom: 0.5rem; }
+    .overall-count-big { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* ページネーション */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    .page-btn {
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.18s;
+    }
+    .page-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .page-btn-arrow {
+      width: auto;
+      padding: 0 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 640px) {
+      .reviews-preview { padding: 2.5rem 1.25rem; }
+      .review-grid { grid-template-columns: 1fr; }
+      .overall-rating-bar { gap: 0.75rem; }
+      .overall-score { font-size: 2.2rem; }
+      .reviews-page-wrap { padding: 2rem 1.25rem; }
+      .overall-score-big { font-size: 3rem; }
+    }
+
     /* ===== FAQ SECTION ===== */
     #faq {
       min-height: 100vh;
@@ -952,7 +1118,6 @@ header {
     .estimate-faq-inner .section-header {
       margin-bottom: 2rem;
     }
-
 
     /* RESPONSIVE */
     @media (max-width: 640px) {
