@@ -6,6 +6,7 @@
     const el = document.getElementById('nav-' + id);
     if (el) el.classList.add('active');
 
+    
     if (id === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
