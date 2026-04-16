@@ -698,7 +698,7 @@ header {
 
     .contact-info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       margin-bottom: 2.5rem;
     }
@@ -713,6 +713,21 @@ header {
     .contact-info-card .ci-icon {
       font-size: 1.8rem;
       margin-bottom: 0.5rem;
+    }
+
+    .ci-icon-line, .ci-icon-instagram {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-size: 0;
+    }
+    .ci-icon-line { background: #06C755; }
+    .ci-icon-instagram {
+      background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
     }
     .contact-info-card .ci-label {
       font-size: 0.78rem;

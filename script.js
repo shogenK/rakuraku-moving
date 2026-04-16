@@ -5,7 +5,16 @@
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     const el = document.getElementById('nav-' + id);
     if (el) el.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (id === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setTimeout(() => {
+        const section = document.getElementById(id);
+        const top = section.offsetTop - 64;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }, 10);
+    }
     return false;
   }
 
