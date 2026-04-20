@@ -23,9 +23,9 @@
     <ul class="nav-links">
       <li><a href="#" onclick="showSection('home')" id="nav-home" class="active">ホーム</a></li>
       <li><a href="#" onclick="showSection('news')" id="nav-news">お知らせ</a></li>
-      <li><a href="#" onclick="showSection('estimate')" id="nav-estimate">見積もり</a></li>
       <li><a href="#" onclick="showSection('faq')" id="nav-faq">よくある質問</a></li>
-      <li><a href="#" onclick="showSection('contact')" id="nav-contact" class="nav-cta">問い合わせ</a></li>
+      <li><a href="#" onclick="showSection('contact')" id="nav-contact">お問い合わせ</a></li>
+      <li><a href="#" onclick="showSection('estimate')" id="nav-estimate" class="nav-cta">無料お見積り</a></li>
     </ul>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()">
       <span></span><span></span><span></span>
@@ -34,9 +34,9 @@
   <div class="mobile-menu" id="mobile-menu">
     <a href="#" onclick="showSection('home');closeMenu()">🏠 ホーム</a>
     <a href="#" onclick="showSection('news');closeMenu()">📢 お知らせ</a>
-    <a href="#" onclick="showSection('estimate');closeMenu()">📋 見積もり</a>
     <a href="#" onclick="showSection('faq');closeMenu()">❓ よくある質問</a>
-    <a href="#" onclick="showSection('contact');closeMenu()">✉️ 問い合わせ</a>
+    <a href="#" onclick="showSection('contact');closeMenu()">✉️ お問い合わせ</a>
+    <a href="#" onclick="showSection('estimate');closeMenu()">📋 無料お見積り</a>
   </div>
 </header>
 
@@ -47,7 +47,7 @@
     <h1>スマートに、<br><span class="accent">らくらく</span>引越し。</h1>
     <p>一人暮らしの引越しに特化したプロフェッショナルチームが、お荷物を丁寧にお届けします。小さなお荷物から大きな家電まで、安心のワンストップサービス。</p>
     <div class="hero-actions">
-      <a href="#" class="btn-primary" onclick="showSection('estimate')">無料で見積もる</a>
+      <a href="#" class="btn-primary" onclick="showSection('estimate')">無料お見積り</a>
       <a href="#" class="btn-outline" onclick="showSection('contact')">お問い合わせ</a>
     </div>
   </div>
@@ -100,59 +100,24 @@
         <h2>ご利用いただいたお客様より</h2>
       </div>
       <div class="overall-rating-bar">
-        <div class="overall-score">4.5</div>
+        <div class="overall-score" id="home-overall-score">—</div>
         <div class="overall-stars-wrap">
           <div class="stars-container">
-            <div class="stars-filled" style="width:90%">★★★★★</div>
+            <div class="stars-filled" id="home-stars-fill" style="width:0%">★★★★★</div>
             <div class="stars-empty">★★★★★</div>
           </div>
-          <div class="overall-count">72件の評価</div>
+          <div class="overall-count" id="home-overall-count">読み込み中…</div>
         </div>
       </div>
-      <div class="review-grid">
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar">田</div>
-            <div class="review-meta">
-              <div class="review-name">田中 亜美 様</div>
-              <div class="review-date">2024年11月</div>
-            </div>
-            <div class="review-rating-stars"><span>★★★★★</span></div>
-          </div>
-          <span class="review-plan-badge">スタンダード</span>
-          <div class="review-comment">急な転勤で1週間前のご連絡にも快く対応いただきました。スタッフの方がとても丁寧で、大型冷蔵庫も傷なく運んでいただき大変満足しています。</div>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar">佐</div>
-            <div class="review-meta">
-              <div class="review-name">佐藤 健太 様</div>
-              <div class="review-date">2024年10月</div>
-            </div>
-            <div class="review-rating-stars"><span>★★★★★</span></div>
-          </div>
-          <span class="review-plan-badge">ミニプラン</span>
-          <div class="review-comment">料金がわかりやすく、見積もり通りの金額で安心できました。当日のスタッフの方も明るく丁寧で、引越しがスムーズに終わりました。</div>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar">伊</div>
-            <div class="review-meta">
-              <div class="review-name">伊藤 美咲 様</div>
-              <div class="review-date">2024年9月</div>
-            </div>
-            <div class="review-rating-stars"><span>★★★★★</span></div>
-          </div>
-          <span class="review-plan-badge">スタンダード</span>
-          <div class="review-comment">女性の一人暮らしの引越しで不安でしたが、スタッフの方が終始丁寧に対応してくださり安心できました。壁の養生もしっかりしていただき傷ゼロで完了しました。</div>
-        </div>
-      </div>
+      <!-- 上位3件を JS で自動描画 -->
+      <div class="review-grid" id="home-reviews-container"></div>
       <div class="reviews-more-link">
         <a href="#" onclick="showSection('reviews')" class="btn-primary">すべてのレビューを見る</a>
       </div>
     </div>
   </section>
 
+  <!-- 価格説明3つのプラン -->
   <section class="pricing">
     <div class="pricing-inner">
       <div class="section-header">
@@ -249,7 +214,7 @@
   </div>
 </div>
 
-<!-- ===== ESTIMATE ===== -->
+<!-- ===== 見積もり ===== -->
 <div class="section" id="estimate">
   <div class="page-title-bar">
     <div class="page-title-inner">
@@ -260,36 +225,72 @@
 
   <div class="estimate-form-wrap">
     <div class="form-card">
-      <div class="form-section-title">引越し元・引越し先</div>
+
+      <!-- 引越し元 -->
+      <div class="form-section-title">引越し元</div>
       <div class="form-group">
-        <label>現在のお住まい（都道府県）<span class="required">必須</span></label>
-        <select id="from-pref">
-          <option value="">選択してください</option>
-          <option value="fukuoka">福岡県</option>
-          <option value="saga">佐賀県</option>
-          <option value="nagasaki">長崎県</option>
-          <option value="kumamoto">熊本県</option>
-          <option value="oita">大分県</option>
-          <option value="miyazaki">宮崎県</option>
-          <option value="kagoshima">鹿児島県</option>
-          <option value="other">その他</option>
-        </select>
+        <label>郵便番号（ハイフンなし・任意）</label>
+        <div class="zip-input-row">
+          <input type="text" id="from-zip" placeholder="例：8100001" maxlength="7" inputmode="numeric">
+          <button type="button" class="zip-btn" onclick="lookupZip('from')">自動入力</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>お引越し先（都道府県）<span class="required">必須</span></label>
-        <select id="to-pref">
-          <option value="">選択してください</option>
-          <option value="fukuoka">福岡県</option>
-          <option value="saga">佐賀県</option>
-          <option value="nagasaki">長崎県</option>
-          <option value="kumamoto">熊本県</option>
-          <option value="oita">大分県</option>
-          <option value="miyazaki">宮崎県</option>
-          <option value="kagoshima">鹿児島県</option>
-          <option value="other">その他</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label>都道府県<span class="required">必須</span></label>
+          <select id="from-pref">
+            <option value="">選択してください</option>
+            <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option><option>秋田県</option>
+            <option>山形県</option><option>福島県</option><option>茨城県</option><option>栃木県</option><option>群馬県</option>
+            <option>埼玉県</option><option>千葉県</option><option>東京都</option><option>神奈川県</option><option>新潟県</option>
+            <option>富山県</option><option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+            <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option><option>滋賀県</option>
+            <option>京都府</option><option>大阪府</option><option>兵庫県</option><option>奈良県</option><option>和歌山県</option>
+            <option>鳥取県</option><option>島根県</option><option>岡山県</option><option>広島県</option><option>山口県</option>
+            <option>徳島県</option><option>香川県</option><option>愛媛県</option><option>高知県</option><option>福岡県</option>
+            <option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option><option>宮崎県</option>
+            <option>鹿児島県</option><option>沖縄県</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>市区町村<span class="required">必須</span></label>
+          <input type="text" id="from-city" placeholder="例：福岡市中央区">
+        </div>
       </div>
 
+      <!-- 引越し先 -->
+      <div class="form-section-title">引越し先</div>
+      <div class="form-group">
+        <label>郵便番号（ハイフンなし・任意）</label>
+        <div class="zip-input-row">
+          <input type="text" id="to-zip" placeholder="例：8600001" maxlength="7" inputmode="numeric">
+          <button type="button" class="zip-btn" onclick="lookupZip('to')">自動入力</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>都道府県<span class="required">必須</span></label>
+          <select id="to-pref">
+            <option value="">選択してください</option>
+            <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option><option>秋田県</option>
+            <option>山形県</option><option>福島県</option><option>茨城県</option><option>栃木県</option><option>群馬県</option>
+            <option>埼玉県</option><option>千葉県</option><option>東京都</option><option>神奈川県</option><option>新潟県</option>
+            <option>富山県</option><option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+            <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option><option>滋賀県</option>
+            <option>京都府</option><option>大阪府</option><option>兵庫県</option><option>奈良県</option><option>和歌山県</option>
+            <option>鳥取県</option><option>島根県</option><option>岡山県</option><option>広島県</option><option>山口県</option>
+            <option>徳島県</option><option>香川県</option><option>愛媛県</option><option>高知県</option><option>福岡県</option>
+            <option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option><option>宮崎県</option>
+            <option>鹿児島県</option><option>沖縄県</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>市区町村<span class="required">必須</span></label>
+          <input type="text" id="to-city" placeholder="例：熊本市中央区">
+        </div>
+      </div>
+
+      <!-- 間取り -->
       <div class="form-section-title">現在のお部屋</div>
       <div class="form-group">
         <label>間取り<span class="required">必須</span></label>
@@ -303,10 +304,11 @@
         </select>
       </div>
 
-      <div class="form-section-title">引越し希望日</div>
+      <!-- 希望日（任意） -->
+      <div class="form-section-title">引越し希望日（任意）</div>
       <div class="form-row">
         <div class="form-group">
-          <label>ご希望日<span class="required">必須</span></label>
+          <label>ご希望日</label>
           <input type="date" id="move-date">
         </div>
         <div class="form-group">
@@ -319,15 +321,25 @@
         </div>
       </div>
 
-      <div class="form-section-title">オプション</div>
-      <div class="form-group">
-        <label>追加オプション</label>
-        <select id="option-type">
-          <option value="none">なし</option>
-          <option value="pack">梱包資材一式（+¥3,000）</option>
-          <option value="assemble">家具組み立て・解体（+¥5,000）</option>
-          <option value="both">両方（+¥7,500）</option>
-        </select>
+      <!-- 家具・大型荷物オプション -->
+      <div class="form-section-title">家具・大型荷物（該当するものにチェック）</div>
+      <div class="furniture-checks">
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="5000"> ベッド（シングル）<span class="opt-price">+¥5,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="8000"> ベッド（セミダブル以上）<span class="opt-price">+¥8,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="5000"> 冷蔵庫（2ドア以上）<span class="opt-price">+¥5,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="4000"> 洗濯機<span class="opt-price">+¥4,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="3000"> テレビ（40インチ以上）<span class="opt-price">+¥3,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="5000"> ソファ<span class="opt-price">+¥5,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="3000"> デスク・椅子セット<span class="opt-price">+¥3,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="3000"> 自転車<span class="opt-price">+¥3,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="15000"> エアコン取り外し・取り付け<span class="opt-price">+¥15,000</span></label>
+      </div>
+
+      <!-- 梱包・作業オプション -->
+      <div class="form-section-title">梱包・作業オプション</div>
+      <div class="furniture-checks">
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="3000"> 梱包資材一式<span class="opt-price">+¥3,000</span></label>
+        <label class="check-label"><input type="checkbox" class="furniture-opt" value="5000"> 家具組み立て・解体<span class="opt-price">+¥5,000</span></label>
       </div>
 
       <button class="submit-btn" onclick="calcEstimate()">概算金額を確認する</button>
@@ -335,8 +347,48 @@
       <div class="estimate-result" id="estimate-result">
         <div class="result-label">概算お見積もり金額</div>
         <div class="result-price" id="result-price">¥--</div>
-        <div class="result-note">※上記は概算です。実際の金額は現地確認後にご案内します。<br>詳細はお問い合わせフォームまたはお電話でご確認ください。</div>
-        <button class="btn-primary" style="margin-top:1rem;" onclick="showSection('contact')">正式な見積もりを依頼する</button>
+        <div class="result-breakdown" id="result-breakdown"></div>
+        <div class="result-note">※上記は概算です。実際の金額は現地確認後にご案内します。</div>
+        <button class="btn-primary" style="margin-top:1rem;" onclick="showFormalRequest()">正式な見積もりを依頼する →</button>
+      </div>
+
+      <!-- 正式依頼フォーム（見積もり後に展開） -->
+      <div class="formal-request" id="formal-request">
+        <div class="formal-request-header">
+          <div class="formal-request-title">📋 正式お見積もり依頼</div>
+          <div class="estimate-summary" id="estimate-summary"></div>
+        </div>
+        <div id="formal-form-body">
+          <div class="form-group">
+            <label>お名前<span class="required">必須</span></label>
+            <input type="text" id="f-name" placeholder="例：山田 太郎">
+          </div>
+          <div class="form-group">
+            <label>電話番号<span class="required">必須</span></label>
+            <input type="tel" id="f-tel" placeholder="例：090-0000-0000">
+          </div>
+          <div class="form-group">
+            <label>メールアドレス<span class="required">必須</span></label>
+            <input type="email" id="f-email" placeholder="例：taro@example.com">
+          </div>
+          <div class="form-group" id="f-date-group">
+            <label>引越し希望日<span class="required">必須</span></label>
+            <input type="date" id="f-date">
+            <div class="field-note">見積もりで希望日が未入力のため、ここで必須となります。</div>
+          </div>
+          <div class="form-group">
+            <label>備考（任意）</label>
+            <textarea id="f-note" placeholder="ご要望・ご質問があればご記入ください"></textarea>
+          </div>
+          <button class="submit-btn" onclick="submitFormalRequest()">依頼を送信する</button>
+        </div>
+        <div class="form-success" id="formal-success">
+          <div class="check-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#1E8A5E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+          </div>
+          <h3>送信が完了しました</h3>
+          <p>ご依頼ありがとうございます。<br>2営業日以内にご連絡いたします。</p>
+        </div>
       </div>
     </div>
   </div>
@@ -469,15 +521,31 @@
   </div>
 
   <div class="reviews-page-wrap">
-    <div class="overall-rating-section">
-      <div class="overall-score-big">4.5</div>
-      <div class="overall-stars-big">
-        <div class="stars-container" style="font-size:2rem">
-          <div class="stars-filled" style="width:90%">★★★★★</div>
-          <div class="stars-empty">★★★★★</div>
+
+    <!-- 総合評価 + 星別バー -->
+    <div class="reviews-summary">
+      <div class="overall-score-block">
+        <div class="overall-score-big" id="overall-score">4.7</div>
+        <div class="overall-stars-big">
+          <div class="stars-container" style="font-size:2rem">
+            <div class="stars-filled" id="overall-stars-fill" style="width:94%">★★★★★</div>
+            <div class="stars-empty">★★★★★</div>
+          </div>
         </div>
+        <div class="overall-count-big" id="overall-count">10件の評価</div>
       </div>
-      <div class="overall-count-big">72件の評価</div>
+      <div class="star-breakdown" id="star-breakdown">
+        <!-- JS で描画 -->
+      </div>
+    </div>
+
+    <!-- 並び替えタブ + フィルター表示 -->
+    <div class="review-controls">
+      <div class="review-sort-tabs">
+        <button class="review-sort-btn active" data-sort="top" onclick="setSort('top')">トップレビュー</button>
+        <button class="review-sort-btn" data-sort="latest" onclick="setSort('latest')">最新順</button>
+      </div>
+      <div id="review-filter-info"></div>
     </div>
 
     <div id="reviews-container"></div>
@@ -507,7 +575,58 @@
     </div>
   </div>
 
+  <!-- 見積もり誘導バナー -->
+  <div class="contact-estimate-banner">
+    <div class="contact-estimate-inner">
+      <div class="contact-estimate-text">
+        <strong>引越しのご依頼はこちら</strong>
+        <p>無料お見積もりフォームから概算金額をすぐに確認できます</p>
+      </div>
+      <a href="#" class="btn-primary" onclick="showSection('estimate')">無料見積もりへ →</a>
+    </div>
+  </div>
+
   <div class="contact-wrap">
+    <!-- フォームを先頭に -->
+    <div class="contact-form-card">
+      <h3>お問い合わせフォーム</h3>
+      <div id="contact-form-body">
+        <div class="form-group">
+          <label>お名前<span class="required">必須</span></label>
+          <input type="text" id="c-name" placeholder="例：山田 太郎">
+        </div>
+        <div class="form-group">
+          <label>メールアドレス<span class="required">必須</span></label>
+          <input type="email" id="c-email" placeholder="例：taro@example.com">
+        </div>
+        <div class="form-group">
+          <label>電話番号</label>
+          <input type="tel" id="c-tel" placeholder="例：090-0000-0000">
+        </div>
+        <div class="form-group">
+          <label>お問い合わせ種別</label>
+          <select id="c-type">
+            <option value="question">サービスについての質問</option>
+            <option value="schedule">日程・エリア確認</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>メッセージ<span class="required">必須</span></label>
+          <textarea id="c-message" placeholder="ご要望・ご質問をご記入ください"></textarea>
+        </div>
+        <button class="submit-btn" onclick="submitContact()">送信する</button>
+      </div>
+      <div class="form-success" id="form-success">
+        <div class="check-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="#1E8A5E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        </div>
+        <h3>送信が完了しました</h3>
+        <p>お問い合わせありがとうございます。<br>2営業日以内にご返信いたします。</p>
+      </div>
+    </div>
+
+    <!-- 連絡先情報はフォームの下 -->
     <div class="contact-info-grid">
       <div class="contact-info-card">
         <div class="ci-icon">📞</div>
@@ -538,45 +657,6 @@
         <div class="ci-sub">最新情報・施工事例を発信中</div>
       </div>
     </div>
-
-    <div class="contact-form-card">
-      <h3>お問い合わせフォーム</h3>
-      <div id="contact-form-body">
-        <div class="form-group">
-          <label>お名前<span class="required">必須</span></label>
-          <input type="text" id="c-name" placeholder="例：山田 太郎">
-        </div>
-        <div class="form-group">
-          <label>メールアドレス<span class="required">必須</span></label>
-          <input type="email" id="c-email" placeholder="例：taro@example.com">
-        </div>
-        <div class="form-group">
-          <label>電話番号</label>
-          <input type="tel" id="c-tel" placeholder="例：090-0000-0000">
-        </div>
-        <div class="form-group">
-          <label>お問い合わせ種別</label>
-          <select id="c-type">
-            <option value="quote">お見積もり依頼</option>
-            <option value="question">サービスについての質問</option>
-            <option value="schedule">日程・エリア確認</option>
-            <option value="other">その他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>メッセージ<span class="required">必須</span></label>
-          <textarea id="c-message" placeholder="ご要望・ご質問をご記入ください"></textarea>
-        </div>
-        <button class="submit-btn" onclick="submitContact()">送信する</button>
-      </div>
-      <div class="form-success" id="form-success">
-        <div class="check-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="#1E8A5E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-        </div>
-        <h3>送信が完了しました</h3>
-        <p>お問い合わせありがとうございます。<br>2営業日以内にご返信いたします。</p>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -588,10 +668,11 @@
 
   <footer>
     <strong>らくらく引越し便</strong><br>
-    〒810-0001 福岡県福岡市中央区天神1-1-1 ／ TEL: 092-000-0000<br>
+    〒810-0006 福岡県福岡市博多区〇〇丁目〇〇-〇〇 ／ TEL: 092-000-0000<br>
     営業時間 9:00〜18:00（土日・祝日対応可） ／ © 2024 らくらく引越し便
   </footer>
 
+<script src="reviews.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

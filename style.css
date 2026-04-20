@@ -636,6 +636,13 @@ header {
       appearance: none;
     }
 
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7087' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.5rem;
+    }
+
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
@@ -671,6 +678,147 @@ header {
       line-height: 1.2;
     }
     .estimate-result .result-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    /* ===== 正式依頼フォーム ===== */
+    .formal-request {
+      display: none;
+      margin-top: 1.5rem;
+      border: 2px solid var(--primary);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .formal-request.show { display: block; }
+
+    .formal-request-header {
+      background: var(--primary);
+      padding: 1rem 1.5rem;
+    }
+    .formal-request-title {
+      color: white;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 900;
+      font-size: 1.05rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* 見積もりサマリー */
+    .estimate-summary {
+      background: rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .estimate-sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.9);
+      padding: 0.2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .estimate-sum-row:last-child { border: none; }
+    .estimate-sum-row span:first-child { color: rgba(255,255,255,0.65); }
+    .sum-price {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      font-weight: 900;
+      font-size: 1rem !important;
+      color: var(--accent-light) !important;
+    }
+
+    /* フォーム本体 */
+    #formal-form-body {
+      padding: 1.5rem;
+      background: white;
+    }
+    .field-note {
+      font-size: 0.75rem;
+      color: #C0392B;
+      margin-top: 0.3rem;
+    }
+
+    @media (max-width: 640px) {
+      .formal-request-header { padding: 1rem; }
+      #formal-form-body { padding: 1.25rem; }
+    }
+
+    /* 郵便番号入力行 */
+    .zip-input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .zip-input-row input {
+      flex: 1;
+      max-width: 200px;
+    }
+    .zip-btn {
+      padding: 0.65rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.18s;
+    }
+    .zip-btn:hover { background: var(--primary-dark); }
+
+    /* 家具チェックボックス */
+    .furniture-checks {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: border-color 0.18s, background 0.18s;
+    }
+    .check-label:hover { border-color: var(--primary); background: #EEF4FB; }
+    .check-label input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+    .check-label input[type="checkbox"]:checked + span, .check-label:has(input:checked) { color: var(--primary); }
+    .check-label:has(input:checked) { border-color: var(--primary); background: #EEF4FB; }
+    .opt-price {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* 見積もり結果の内訳 */
+    .result-breakdown {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0.5rem 0;
+      text-align: left;
+      line-height: 1.9;
+    }
+    .result-breakdown .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.1rem 0;
+      border-bottom: 1px dotted var(--border);
+    }
+    .result-breakdown .breakdown-row:last-child { border: none; }
+
+    @media (max-width: 640px) {
+      .furniture-checks { grid-template-columns: 1fr; }
+      .zip-input-row input { max-width: 100%; }
+    }
 
     /* ===== CONTACT SECTION ===== */
     #contact {
@@ -743,6 +891,37 @@ header {
     .contact-info-card .ci-sub {
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+
+    /* ===== CONTACT ESTIMATE BANNER ===== */
+    .contact-estimate-banner {
+      background: linear-gradient(135deg, #EEF4FB 0%, #D6E8FA 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+    }
+
+    .contact-estimate-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-estimate-text strong {
+      display: block;
+      color: var(--primary);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .contact-estimate-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
     }
 
     .contact-form-card {
@@ -938,6 +1117,121 @@ header {
     .overall-stars-big { margin-bottom: 0.5rem; }
     .overall-count-big { font-size: 0.9rem; color: var(--text-muted); }
 
+    /* 総合評価 + 星別バー 横並び */
+    .reviews-summary {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .overall-score-block {
+      text-align: center;
+      flex-shrink: 0;
+      min-width: 130px;
+    }
+
+    /* 星別バー */
+    .star-breakdown {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .star-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .star-bar-row:hover { background: #F0F6FF; }
+    .star-bar-row.active { background: #E4F0FF; }
+    .star-bar-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 28px;
+    }
+    .star-bar-row.active .star-bar-label { color: var(--primary); }
+    .star-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .star-bar-fill {
+      height: 100%;
+      background: #F5821F;
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+    .star-bar-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      min-width: 32px;
+      text-align: right;
+    }
+    .star-bar-row.active .star-bar-count { color: var(--primary); font-weight: 700; }
+
+    /* 並び替えタブ + フィルター表示 */
+    .review-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .review-sort-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .review-sort-btn {
+      padding: 0.45rem 1.1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      background: white;
+      font-size: 0.875rem;
+      font-family: inherit;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .review-sort-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .review-sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* フィルターバッジ */
+    .review-filter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #E4F0FF;
+      color: var(--primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+    }
+    .filter-clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 0.8rem;
+      padding: 0;
+      font-family: inherit;
+      font-weight: 700;
+    }
+    .filter-clear-btn:hover { color: var(--accent); }
+
     /* ページネーション */
     .pagination {
       display: flex;
@@ -973,6 +1267,10 @@ header {
       .overall-score { font-size: 2.2rem; }
       .reviews-page-wrap { padding: 2rem 1.25rem; }
       .overall-score-big { font-size: 3rem; }
+      .reviews-summary { flex-direction: column; gap: 1.25rem; padding: 1.5rem; }
+      .overall-score-block { min-width: unset; }
+      .star-breakdown { width: 100%; }
+      .review-controls { flex-direction: column; align-items: flex-start; }
     }
 
     /* ===== FAQ SECTION ===== */
