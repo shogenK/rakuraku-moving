@@ -161,56 +161,8 @@
       <button class="filter-btn" onclick="filterNews('info', this)">お知らせ</button>
       <button class="filter-btn" onclick="filterNews('notice', this)">重要</button>
     </div>
-
-    <div class="news-item" data-tag="campaign" onclick="toggleNews(this)">
-      <div class="news-item-header">
-        <span class="news-date">2024年12月1日</span>
-        <span class="news-tag tag-campaign">キャンペーン</span>
-      </div>
-      <div class="news-title">【冬の引越し割引】12月〜2月ご依頼で最大10%OFF！</div>
-      <div class="news-excerpt">閑散期特別価格でお得に引越しができます。期間限定のためお早めにどうぞ。</div>
-      <div class="news-detail">12月1日〜2月28日のご依頼を対象に、基本料金より最大10%の割引を適用いたします。ご予約時に「冬割キャンペーン」とお伝えください。他の割引との併用は不可となります。詳細はお電話またはお問い合わせフォームよりご確認ください。</div>
-    </div>
-
-    <div class="news-item" data-tag="info" onclick="toggleNews(this)">
-      <div class="news-item-header">
-        <span class="news-date">2024年11月15日</span>
-        <span class="news-tag tag-info">お知らせ</span>
-      </div>
-      <div class="news-title">ホームページをリニューアルしました</div>
-      <div class="news-excerpt">より使いやすくなったウェブサイトを公開しました。オンライン見積もり機能が新たに追加されています。</div>
-      <div class="news-detail">この度、サービスの充実に合わせてホームページを全面リニューアルいたしました。スマートフォンでも快適にご利用いただけるようになりました。また、ご概算の確認が可能なオンライン見積もり機能も追加しております。ぜひご活用ください。</div>
-    </div>
-
-    <div class="news-item" data-tag="notice" onclick="toggleNews(this)">
-      <div class="news-item-header">
-        <span class="news-date">2024年11月1日</span>
-        <span class="news-tag tag-notice">重要</span>
-      </div>
-      <div class="news-title">年末年始（12/29〜1/3）の受付・作業について</div>
-      <div class="news-excerpt">年末年始期間中の営業スケジュールをご案内します。</div>
-      <div class="news-detail">2024年12月29日（日）〜2025年1月3日（金）は、電話受付・引越し作業ともにお休みとさせていただきます。メールでのお問い合わせはお受けしておりますが、ご返信は1月4日（土）以降となります。ご不便をおかけいたしますが、ご了承くださいますようお願いいたします。</div>
-    </div>
-
-    <div class="news-item" data-tag="campaign" onclick="toggleNews(this)">
-      <div class="news-item-header">
-        <span class="news-date">2024年10月10日</span>
-        <span class="news-tag tag-campaign">キャンペーン</span>
-      </div>
-      <div class="news-title">Googleクチコミ投稿で次回割引クーポン進呈</div>
-      <div class="news-excerpt">ご利用後にGoogleマップへクチコミを投稿いただいたお客様に、次回ご利用時の割引クーポンをお渡しします。</div>
-      <div class="news-detail">お引越し完了後にGoogleマップへクチコミをご投稿いただいたお客様に、次回ご利用時に使える5%OFFクーポンをプレゼントしております。スタッフにご申告いただくか、お問い合わせフォームからご連絡ください。</div>
-    </div>
-
-    <div class="news-item" data-tag="info" onclick="toggleNews(this)">
-      <div class="news-item-header">
-        <span class="news-date">2024年9月1日</span>
-        <span class="news-tag tag-info">お知らせ</span>
-      </div>
-      <div class="news-title">エリア拡大：北九州市・久留米市も対応開始</div>
-      <div class="news-excerpt">新たに北九州市・久留米市への配送・引越し作業に対応いたします。</div>
-      <div class="news-detail">これまで福岡市・福岡近郊を中心にサービスを展開してまいりましたが、9月よりエリアを拡大し、北九州市・久留米市も正式対応エリアとなりました。遠距離の場合は別途交通費をいただく場合がございます。詳しくはお問い合わせください。</div>
-    </div>
+    <!-- news.js の allNews から JS で自動描画 -->
+    <div id="news-container"></div>
   </div>
 </div>
 
@@ -229,9 +181,9 @@
       <!-- 引越し元 -->
       <div class="form-section-title">引越し元</div>
       <div class="form-group">
-        <label>郵便番号（ハイフンなし・任意）</label>
+        <label>郵便番号（ハイフンなし）<span class="required">必須</span></label>
         <div class="zip-input-row">
-          <input type="text" id="from-zip" placeholder="例：8100001" maxlength="7" inputmode="numeric">
+          <input type="text" id="from-zip" placeholder="例：8100001" maxlength="7" inputmode="numeric" required>
           <button type="button" class="zip-btn" onclick="lookupZip('from')">自動入力</button>
         </div>
       </div>
@@ -261,9 +213,9 @@
       <!-- 引越し先 -->
       <div class="form-section-title">引越し先</div>
       <div class="form-group">
-        <label>郵便番号（ハイフンなし・任意）</label>
+        <label>郵便番号（ハイフンなし）<span class="required">必須</span></label>
         <div class="zip-input-row">
-          <input type="text" id="to-zip" placeholder="例：8600001" maxlength="7" inputmode="numeric">
+          <input type="text" id="to-zip" placeholder="例：8600001" maxlength="7" inputmode="numeric" required>
           <button type="button" class="zip-btn" onclick="lookupZip('to')">自動入力</button>
         </div>
       </div>
@@ -296,7 +248,6 @@
         <label>間取り<span class="required">必須</span></label>
         <select id="room-type">
           <option value="">選択してください</option>
-          <option value="1R">1R</option>
           <option value="1K">1K</option>
           <option value="1DK">1DK</option>
           <option value="1LDK">1LDK</option>
@@ -399,28 +350,8 @@
         <div class="eyebrow">FAQ</div>
         <h2>よくある質問</h2>
       </div>
-      <div class="faq-list">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>見積もりは無料ですか？</div>
-          <div class="faq-a">はい、お見積もりは完全無料です。お気軽にご利用ください。正式なご依頼前のご確認だけでも大歓迎です。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>追加料金が発生することはありますか？</div>
-          <div class="faq-a">お見積もり時に提示した金額から変動しません。事前に合意した内容以外の追加料金は一切いただきません。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>当日・翌日の引越しは対応できますか？</div>
-          <div class="faq-a">可能な限り対応しております。ただし、繁忙期（3〜4月）は難しい場合があります。まずはお電話またはお問い合わせフォームにてご相談ください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>概算金額と実際の金額は大きく変わりますか？</div>
-          <div class="faq-a">概算はあくまでご参考の金額です。実際には荷物量や搬入経路・エレベーターの有無などによって変動します。正確な金額は現地確認後にご案内いたします。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>キャンセルはできますか？</div>
-          <div class="faq-a">作業日の前日までにご連絡いただければキャンセル可能です。当日キャンセルの場合はキャンセル料が発生する場合がございます。詳しくはお問い合わせください。</div>
-        </div>
-      </div>
+      <!-- faq.js の estimateFaqs から JS で自動描画 -->
+      <div id="estimate-faq-container"></div>
       <div class="faq-cta-link">
         <a href="#" onclick="showSection('faq')">すべてのよくある質問を見る →</a>
       </div>
@@ -438,71 +369,8 @@
   </div>
 
   <div class="faq-page-wrap">
-    <div class="faq-category">
-      <h2 class="faq-category-title">お見積もり・料金について</h2>
-      <div class="faq-list">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>見積もりは無料ですか？</div>
-          <div class="faq-a">はい、お見積もりは完全無料です。お気軽にご利用ください。正式なご依頼前のご確認だけでも大歓迎です。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>追加料金が発生することはありますか？</div>
-          <div class="faq-a">お見積もり時に提示した金額から変動しません。事前に合意した内容以外の追加料金は一切いただきません。安心してご利用ください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>概算金額と実際の金額は大きく変わりますか？</div>
-          <div class="faq-a">概算はあくまでご参考の金額です。実際には荷物量・搬入経路・エレベーターの有無などによって変動します。正確な金額は現地確認後にご案内いたします。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>支払い方法は何が使えますか？</div>
-          <div class="faq-a">現金・銀行振込に対応しております。クレジットカードについては、現在導入を検討中です。詳しくはお問い合わせください。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="faq-category">
-      <h2 class="faq-category-title">サービス・対応エリアについて</h2>
-      <div class="faq-list">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>対応エリアはどこですか？</div>
-          <div class="faq-a">福岡県を中心に、佐賀県・長崎県・熊本県・大分県・宮崎県・鹿児島県に対応しております。また、2024年9月より北九州市・久留米市も正式対応エリアとなりました。エリア外の場合も、まずはご相談ください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>当日・翌日の引越しは対応できますか？</div>
-          <div class="faq-a">可能な限り対応しております。ただし、繁忙期（3〜4月）は難しい場合があります。まずはお電話またはお問い合わせフォームにてご相談ください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>大型家電（冷蔵庫・洗濯機）も運んでもらえますか？</div>
-          <div class="faq-a">はい、冷蔵庫・洗濯機・テレビ等の大型家電もお任せください。搬入・搬出時の養生もしっかり行います。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>荷造りは自分でする必要がありますか？</div>
-          <div class="faq-a">基本的には事前にお客様自身でご準備いただきますが、梱包資材一式（+¥3,000）・家具組み立て解体（+¥5,000）のオプションもご用意しています。ご希望の際はお見積もり時にお申し付けください。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="faq-category">
-      <h2 class="faq-category-title">スタッフ・安心・キャンセルについて</h2>
-      <div class="faq-list">
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>スタッフは自社スタッフですか？</div>
-          <div class="faq-a">はい、全員が研修を受けた自社スタッフです。外注は行っておりませんので、品質に自信があります。女性のお客様も安心してご依頼ください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>万が一、荷物に損傷があった場合はどうなりますか？</div>
-          <div class="faq-a">万が一、作業中に損傷が発生した場合は、損害保険にて対応いたします。安心してお任せください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>キャンセルはできますか？</div>
-          <div class="faq-a">作業日の前日までにご連絡いただければキャンセル可能です。当日キャンセルの場合はキャンセル料が発生する場合がございます。詳しくはお問い合わせください。</div>
-        </div>
-        <div class="faq-item" onclick="toggleFaq(this)">
-          <div class="faq-q"><span class="faq-icon">Q</span>作業当日、立ち合いは必要ですか？</div>
-          <div class="faq-a">搬出・搬入の開始時と終了時にはご立ち合いをお願いしております。作業中は不在でも構いません。詳しくはご依頼時にご相談ください。</div>
-        </div>
-      </div>
-    </div>
+    <!-- faq.js の faqCategories から JS で自動描画 -->
+    <div id="faq-page-container"></div>
 
     <div class="faq-bottom-cta">
       <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
@@ -672,7 +540,10 @@
     営業時間 9:00〜18:00（土日・祝日対応可） ／ © 2024 らくらく引越し便
   </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="reviews.js"></script>
+<script src="faq.js"></script>
+<script src="news.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

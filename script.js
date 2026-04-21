@@ -1,3 +1,8 @@
+  // --- EMAILJS 初期化 ---
+  const EMAILJS_SERVICE_ID  = 'service_demo20260420';
+  const EMAILJS_TEMPLATE_ID = 'template_pm07dxb';
+  emailjs.init('Ey4aS5A4qtpGSrUTa');
+
   // --- NAVIGATION ---
   function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -30,7 +35,28 @@
     document.getElementById('mobile-menu').classList.remove('open');
   }
 
-  // --- NEWS FILTER ---
+  // --- NEWS ---
+  // お知らせデータは news.js で管理しています。
+  // 新しいお知らせを追加する場合は news.js を編集してください。
+
+  const TAG_LABELS = { campaign: 'キャンペーン', info: 'お知らせ', notice: '重要' };
+
+  function renderNews() {
+    const container = document.getElementById('news-container');
+    if (!container || !allNews) return;
+    container.innerHTML = allNews.map(item => `
+      <div class="news-item" data-tag="${item.tag}" onclick="toggleNews(this)">
+        <div class="news-item-header">
+          <span class="news-date">${item.date}</span>
+          <span class="news-tag tag-${item.tag}">${TAG_LABELS[item.tag] || item.tag}</span>
+        </div>
+        <div class="news-title">${item.title}</div>
+        <div class="news-excerpt">${item.excerpt}</div>
+        <div class="news-detail">${item.detail}</div>
+      </div>
+    `).join('');
+  }
+
   function filterNews(tag, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -46,7 +72,160 @@
 
   // --- ESTIMATE ---
 
-  // 都道府県の代表座標（Haversine距離計算用）
+  // 距離料金テーブル
+  function getDistanceSurcharge(km) {
+    if (km <= 30)  return { charge: 0,      label: '同一エリア（〜30km）' };
+    if (km <= 80)  return { charge: 10000,  label: '近距離（30〜80km）' };
+    if (km <= 150) return { charge: 25000,  label: '中距離（80〜150km）' };
+    if (km <= 300) return { charge: 45000,  label: '遠距離（150〜300km）' };
+    return             { charge: 70000,  label: '長距離（300km超）' };
+  }
+
+  // ハーバーサイン公式（緯度経度 → km）
+  function calcDistanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const toRad = deg => deg * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  // 郵便番号 → 緯度経度（zipcloud + Nominatim）
+  // 同じ郵便番号の2回目以降はキャッシュから返す
+  const _latLngCache = {};
+  async function getLatLng(zip) {
+    if (_latLngCache[zip]) return _latLngCache[zip];
+    // zipcloud で住所取得
+    const r1   = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
+    const d1   = await r1.json();
+    if (!d1.results) throw new Error('住所取得失敗');
+    const addr = d1.results[0].address1 + d1.results[0].address2 + d1.results[0].address3;
+    // Nominatim で緯度経度取得
+    const r2   = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`
+    );
+    const d2   = await r2.json();
+    if (!d2.length) throw new Error('座標取得失敗');
+    const result = { lat: parseFloat(d2[0].lat), lon: parseFloat(d2[0].lon) };
+    _latLngCache[zip] = result;
+    return result;
+  }
+
+  // 郵便番号 → 都道府県・市区町村 自動入力
+  async function lookupZip(prefix) {
+    const raw = document.getElementById(prefix + '-zip').value.replace(/-/g, '').trim();
+    if (raw.length !== 7 || isNaN(raw)) {
+      alert('郵便番号を7桁の数字で入力してください（例：8100001）');
+      return;
+    }
+    const btn = document.querySelector(`[onclick="lookupZip('${prefix}')"]`);
+    if (btn) { btn.textContent = '検索中…'; btn.disabled = true; }
+    try {
+      const res  = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${raw}`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const r    = data.results[0];
+        const pref = r.address1;
+        const city = r.address2 + r.address3;
+        const sel  = document.getElementById(prefix + '-pref');
+        sel.value  = pref;
+        document.getElementById(prefix + '-city').value = city;
+      } else {
+        alert('該当する住所が見つかりませんでした。都道府県・市区町村を直接入力してください。');
+      }
+    } catch(e) {
+      alert('通信エラーが発生しました。都道府県・市区町村を直接入力してください。');
+    } finally {
+      if (btn) { btn.textContent = '自動入力'; btn.disabled = false; }
+    }
+  }
+
+  async function calcEstimate() {
+    const fromPref = document.getElementById('from-pref').value;
+    const fromCity = document.getElementById('from-city').value.trim();
+    const toPref   = document.getElementById('to-pref').value;
+    const toCity   = document.getElementById('to-city').value.trim();
+    const room     = document.getElementById('room-type').value;
+    const time     = document.getElementById('move-time').value;
+
+    const fromZip = document.getElementById('from-zip').value.replace(/-/g, '').trim();
+    const toZip   = document.getElementById('to-zip').value.replace(/-/g, '').trim();
+
+    if (fromZip.length !== 7 || isNaN(fromZip)) {
+      alert('引越し元の郵便番号を7桁の数字で入力してください');
+      document.getElementById('from-zip').focus();
+      return;
+    }
+    if (toZip.length !== 7 || isNaN(toZip)) {
+      alert('引越し先の郵便番号を7桁の数字で入力してください');
+      document.getElementById('to-zip').focus();
+      return;
+    }
+    if (!fromPref || !fromCity || !toPref || !toCity || !room) {
+      alert('都道府県・市区町村・間取りは必須です。郵便番号の「自動入力」ボタンを押して住所を入力してください');
+      return;
+    }
+
+    // ボタンをローディング状態に
+    const calcBtn = document.querySelector('[onclick="calcEstimate()"]');
+    if (calcBtn) { calcBtn.textContent = '計算中…'; calcBtn.disabled = true; }
+
+    try {
+      // 基本料金（間取り）
+      const baseMap = { '1R': 19800, '1K': 24800, '1DK': 34800, '1LDK': 44800, '2K': 49800 };
+      let base = baseMap[room] || 29800;
+
+      // 時間帯割引
+      if (time === 'any') base = Math.round(base * 0.92);
+
+      // 距離料金（郵便番号 → API計算、失敗時は都道府県座標でフォールバック）
+      let distInfo = { charge: 0, label: '同一エリア（〜30km）', km: 0 };
+      try {
+        const [from, to] = await Promise.all([getLatLng(fromZip), getLatLng(toZip)]);
+        const km = Math.round(calcDistanceKm(from.lat, from.lon, to.lat, to.lon));
+        distInfo = { ...getDistanceSurcharge(km), km };
+      } catch(e) {
+        // API失敗時は都道府県中心座標でフォールバック
+        distInfo = calcDistByPref(fromPref, toPref);
+      }
+
+      // 家具・オプション料金
+      const checks = document.querySelectorAll('.furniture-opt:checked');
+      let optTotal = 0;
+      const optDetails = [];
+      checks.forEach(cb => {
+        const val = parseInt(cb.value);
+        const lbl = cb.parentElement.textContent.replace(/\+¥[\d,]+/, '').trim();
+        optTotal += val;
+        optDetails.push({ lbl, val });
+      });
+
+      const total = base + distInfo.charge + optTotal;
+
+      // 内訳表示
+      let bdHTML = `
+        <div class="breakdown-row"><span>基本料金（${room}）${time==='any'?' ※おまかせ割引適用':''}</span><span>¥${base.toLocaleString()}</span></div>
+        <div class="breakdown-row"><span>距離料金（${distInfo.label}${distInfo.km ? ' 約'+distInfo.km+'km' : ''}）</span><span>¥${distInfo.charge.toLocaleString()}</span></div>
+      `;
+      optDetails.forEach(o => {
+        bdHTML += `<div class="breakdown-row"><span>${o.lbl}</span><span>¥${o.val.toLocaleString()}</span></div>`;
+      });
+
+      document.getElementById('result-breakdown').innerHTML = bdHTML;
+      document.getElementById('result-price').textContent = '¥' + total.toLocaleString() + '〜';
+      const el = document.getElementById('estimate-result');
+      el.classList.add('show');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    } finally {
+      if (calcBtn) { calcBtn.textContent = '概算を計算する'; calcBtn.disabled = false; }
+    }
+  }
+
+  // 都道府県中心座標によるフォールバック計算
   const PREF_COORDS = {
     '北海道':[43.064,141.347],'青森県':[40.824,140.740],'岩手県':[39.704,141.153],
     '宮城県':[38.269,140.872],'秋田県':[39.719,140.102],'山形県':[38.240,140.363],
@@ -65,118 +244,18 @@
     '熊本県':[32.790,130.742],'大分県':[33.238,131.613],'宮崎県':[31.911,131.424],
     '鹿児島県':[31.560,130.558],'沖縄県':[26.212,127.681]
   };
-
-  function haversineKm(c1, c2) {
-    const R = 6371;
-    const dLat = (c2[0] - c1[0]) * Math.PI / 180;
-    const dLon = (c2[1] - c1[1]) * Math.PI / 180;
-    const a = Math.sin(dLat/2)**2 +
-              Math.cos(c1[0]*Math.PI/180) * Math.cos(c2[0]*Math.PI/180) *
-              Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
-  function getDistanceSurcharge(km) {
-    if (km <= 30)  return { charge: 0,      label: '同一エリア（〜30km）' };
-    if (km <= 80)  return { charge: 10000,  label: '近距離（30〜80km）' };
-    if (km <= 150) return { charge: 25000,  label: '中距離（80〜150km）' };
-    if (km <= 300) return { charge: 45000,  label: '遠距離（150〜300km）' };
-    return             { charge: 70000,  label: '長距離（300km超）' };
-  }
-
-  // 郵便番号 → 都道府県・市区町村 自動入力
-  async function lookupZip(prefix) {
-    const raw = document.getElementById(prefix + '-zip').value.replace(/-/g, '').trim();
-    if (raw.length !== 7 || isNaN(raw)) {
-      alert('郵便番号を7桁の数字で入力してください（例：8100001）');
-      return;
-    }
-    const btn = document.querySelector(`#${prefix}-zip + button`) ||
-                document.querySelector(`[onclick="lookupZip('${prefix}')"]`);
-    if (btn) { btn.textContent = '検索中…'; btn.disabled = true; }
-    try {
-      const res  = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${raw}`);
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const r    = data.results[0];
-        const pref = r.address1;
-        const city = r.address2 + r.address3;
-        const sel  = document.getElementById(prefix + '-pref');
-        for (let opt of sel.options) {
-          if (opt.value === pref || opt.text === pref) { sel.value = opt.value || pref; break; }
-        }
-        // optionのvalueが空の場合（<option>都道府県名</option>形式）
-        sel.value = pref;
-        document.getElementById(prefix + '-city').value = city;
-      } else {
-        alert('該当する住所が見つかりませんでした。都道府県・市区町村を直接選択してください。');
-      }
-    } catch(e) {
-      alert('通信エラーが発生しました。都道府県・市区町村を直接選択してください。');
-    } finally {
-      if (btn) { btn.textContent = '自動入力'; btn.disabled = false; }
-    }
-  }
-
-  function calcEstimate() {
-    const fromPref = document.getElementById('from-pref').value;
-    const fromCity = document.getElementById('from-city').value.trim();
-    const toPref   = document.getElementById('to-pref').value;
-    const toCity   = document.getElementById('to-city').value.trim();
-    const room     = document.getElementById('room-type').value;
-    const time     = document.getElementById('move-time').value;
-
-    if (!fromPref || !fromCity || !toPref || !toCity || !room) {
-      alert('引越し元・先の都道府県と市区町村、間取りは必須です');
-      return;
-    }
-
-    // 基本料金（間取り）
-    const baseMap = { '1R': 19800, '1K': 24800, '1DK': 34800, '1LDK': 44800, '2K': 49800 };
-    let base = baseMap[room] || 29800;
-
-    // 時間帯割引
-    if (time === 'any') base = Math.round(base * 0.92);
-
-    // 距離料金
+  function calcDistByPref(fromPref, toPref) {
     const c1 = PREF_COORDS[fromPref];
     const c2 = PREF_COORDS[toPref];
-    let distInfo = { charge: 0, label: '同一エリア', km: 0 };
-    if (c1 && c2) {
-      const km = Math.round(haversineKm(c1, c2));
-      distInfo = { ...getDistanceSurcharge(km), km };
-    }
-
-    // 家具・オプション料金
-    const checks = document.querySelectorAll('.furniture-opt:checked');
-    let optTotal = 0;
-    const optDetails = [];
-    checks.forEach(cb => {
-      const val = parseInt(cb.value);
-      const lbl = cb.parentElement.textContent.replace(/\+¥[\d,]+/, '').trim();
-      optTotal += val;
-      optDetails.push({ lbl, val });
-    });
-
-    const total = base + distInfo.charge + optTotal;
-
-    // 内訳表示
-    let bdHTML = `
-      <div class="breakdown-row"><span>基本料金（${room}）${time==='any'?' ※おまかせ割引適用':''}</span><span>¥${base.toLocaleString()}</span></div>
-      <div class="breakdown-row"><span>距離料金（${distInfo.label}${distInfo.km ? ' 約'+distInfo.km+'km' : ''}）</span><span>¥${distInfo.charge.toLocaleString()}</span></div>
-    `;
-    optDetails.forEach(o => {
-      bdHTML += `<div class="breakdown-row"><span>${o.lbl}</span><span>¥${o.val.toLocaleString()}</span></div>`;
-    });
-
-    document.getElementById('result-breakdown').innerHTML = bdHTML;
-    document.getElementById('result-price').textContent = '¥' + total.toLocaleString() + '〜';
-    const el = document.getElementById('estimate-result');
-    el.classList.add('show');
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!c1 || !c2) return { charge: 0, label: '同一エリア（〜30km）', km: 0 };
+    const km = Math.round(calcDistanceKm(c1[0], c1[1], c2[0], c2[1]));
+    return { ...getDistanceSurcharge(km), km };
   }
 
   // --- FORMAL REQUEST ---
+  // submitFormalRequest() で参照するため、見積もりデータをここに保存
+  let _estimateData = {};
+
   function showFormalRequest() {
     const formalEl = document.getElementById('formal-request');
     const summaryEl = document.getElementById('estimate-summary');
@@ -184,8 +263,10 @@
     // 見積もり情報を収集
     const fromPref  = document.getElementById('from-pref').value;
     const fromCity  = document.getElementById('from-city').value.trim();
+    const fromZip   = document.getElementById('from-zip').value.replace(/-/g, '').trim();
     const toPref    = document.getElementById('to-pref').value;
     const toCity    = document.getElementById('to-city').value.trim();
+    const toZip     = document.getElementById('to-zip').value.replace(/-/g, '').trim();
     const room      = document.getElementById('room-type').value;
     const moveDate  = document.getElementById('move-date').value;
     const price     = document.getElementById('result-price').textContent;
@@ -209,14 +290,22 @@
 
     // 選択されたオプションを収集
     const checks = document.querySelectorAll('.furniture-opt:checked');
+    let optLabels = 'なし';
     if (checks.length > 0) {
-      const optLabels = Array.from(checks).map(cb =>
+      optLabels = Array.from(checks).map(cb =>
         cb.parentElement.textContent.replace(/\+¥[\d,]+/, '').trim()
       ).join('、');
       summaryHTML += `<div class="estimate-sum-row"><span>オプション</span><span>${optLabels}</span></div>`;
     }
 
     summaryEl.innerHTML = summaryHTML;
+
+    // 見積もりデータを保存（submitFormalRequest で使用）
+    _estimateData = {
+      fromPref, fromCity, fromZip,
+      toPref, toCity, toZip,
+      room, timeLabel, dateDisp, price, optLabels
+    };
 
     // 希望日が未入力なら正式依頼フォームで必須化
     const dateGroup = document.getElementById('f-date-group');
@@ -241,10 +330,11 @@
     }, 50);
   }
 
-  function submitFormalRequest() {
+  async function submitFormalRequest() {
     const name  = document.getElementById('f-name').value.trim();
     const tel   = document.getElementById('f-tel').value.trim();
     const email = document.getElementById('f-email').value.trim();
+    const note  = document.getElementById('f-note').value.trim();
     const dateGroup = document.getElementById('f-date-group');
     const fDate = document.getElementById('f-date').value;
 
@@ -255,9 +345,51 @@
       alert('引越し希望日を入力してください'); return;
     }
 
-    document.getElementById('formal-form-body').style.display = 'none';
-    document.getElementById('formal-success').classList.add('show');
-    document.getElementById('formal-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const submitBtn = document.querySelector('[onclick="submitFormalRequest()"]');
+    if (submitBtn) { submitBtn.textContent = '送信中…'; submitBtn.disabled = true; }
+
+    // 希望日の表示用フォーマット
+    const desiredDate = fDate
+      ? new Date(fDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })
+      : (_estimateData.dateDisp || '未定');
+
+    // メール本文（すべての見積もり情報を含む）
+    const message = [
+      '■ お客様情報',
+      `お名前　　：${name}`,
+      `電話番号　：${tel}`,
+      `メール　　：${email}`,
+      '',
+      '■ 引越し内容',
+      `引越し元　：${_estimateData.fromPref} ${_estimateData.fromCity}（〒${_estimateData.fromZip}）`,
+      `引越し先　：${_estimateData.toPref} ${_estimateData.toCity}（〒${_estimateData.toZip}）`,
+      `間取り　　：${_estimateData.room}`,
+      `時間帯　　：${_estimateData.timeLabel}`,
+      `希望日　　：${desiredDate}`,
+      `オプション：${_estimateData.optLabels}`,
+      `概算金額　：${_estimateData.price}`,
+      '',
+      '■ ご要望・備考',
+      note || 'なし',
+    ].join('\n');
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        form_type:  '正式見積もり依頼',
+        from_name:  name,
+        from_email: email,
+        phone:      tel,
+        subject:    `【正式見積もり依頼】${name} 様`,
+        message,
+      });
+      document.getElementById('formal-form-body').style.display = 'none';
+      document.getElementById('formal-success').classList.add('show');
+      document.getElementById('formal-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch(e) {
+      alert('送信に失敗しました。お電話またはメールにて直接お問い合わせください。');
+    } finally {
+      if (submitBtn) { submitBtn.textContent = '依頼を送信する'; submitBtn.disabled = false; }
+    }
   }
 
   // --- REVIEWS ---
@@ -269,10 +401,14 @@
   let currentSort = 'top';   // 'top' | 'latest'
   let currentFilter = null;  // null | 1 | 2 | 3 | 4 | 5
 
-  // '2024年11月' → 202411 (比較用数値)
+  // '2024年11月' → 20241100 / '2021年5月30日' → 20210530 (比較用数値)
   function parseDateValue(dateStr) {
-    const m = dateStr.match(/(\d+)年(\d+)月/);
-    return m ? parseInt(m[1]) * 100 + parseInt(m[2]) : 0;
+    const m = dateStr.match(/(\d+)年(\d+)月(?:(\d+)日)?/);
+    if (!m) return 0;
+    const year  = parseInt(m[1]);
+    const month = parseInt(m[2]);
+    const day   = m[3] ? parseInt(m[3]) : 0;
+    return year * 10000 + month * 100 + day;
   }
 
   // フィルター + ソートを適用した一覧を返す
@@ -458,22 +594,90 @@
     renderStarBreakdown();    // レビューページの星別バーを描画
     renderFilterInfo();
     renderReviews(1);
+    renderFaqPage();          // よくある質問ページを描画
+    renderEstimateFaq();      // 見積もりページのミニFAQを描画
+    renderNews();             // お知らせページを描画
   });
 
   // --- FAQ ---
+  // 質問・回答データは faq.js で管理しています。
+  // 質問を追加・変更する場合は faq.js を編集してください。
+
+  function faqItemHtml(item) {
+    return `
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span class="faq-icon">Q</span>${item.q}</div>
+        <div class="faq-a">${item.a}</div>
+      </div>
+    `;
+  }
+
+  // よくある質問ページ（カテゴリー別）
+  function renderFaqPage() {
+    const container = document.getElementById('faq-page-container');
+    if (!container || !faqCategories) return;
+    container.innerHTML = faqCategories.map(cat => `
+      <div class="faq-category">
+        <h2 class="faq-category-title">${cat.category}</h2>
+        <div class="faq-list">
+          ${cat.items.map(faqItemHtml).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 見積もりページ下部のミニFAQ
+  function renderEstimateFaq() {
+    const container = document.getElementById('estimate-faq-container');
+    if (!container || !estimateFaqs) return;
+    container.innerHTML = `<div class="faq-list">${estimateFaqs.map(faqItemHtml).join('')}</div>`;
+  }
+
   function toggleFaq(el) {
     el.classList.toggle('open');
   }
 
   // --- CONTACT ---
-  function submitContact() {
-    const name = document.getElementById('c-name').value.trim();
+  async function submitContact() {
+    const name  = document.getElementById('c-name').value.trim();
     const email = document.getElementById('c-email').value.trim();
-    const msg = document.getElementById('c-message').value.trim();
-    if (!name || !email || !msg) {
-      alert('必須項目をご入力ください');
-      return;
+    const tel   = document.getElementById('c-tel').value.trim();
+    const typeEl = document.getElementById('c-type');
+    const type  = typeEl.options[typeEl.selectedIndex].text;
+    const msg   = document.getElementById('c-message').value.trim();
+
+    if (!name)  { alert('お名前を入力してください'); return; }
+    if (!email) { alert('メールアドレスを入力してください'); return; }
+    if (!msg)   { alert('メッセージを入力してください'); return; }
+
+    const submitBtn = document.querySelector('[onclick="submitContact()"]');
+    if (submitBtn) { submitBtn.textContent = '送信中…'; submitBtn.disabled = true; }
+
+    const message = [
+      '■ お客様情報',
+      `お名前　　　　：${name}`,
+      `メール　　　　：${email}`,
+      `電話番号　　　：${tel || '未記入'}`,
+      `お問い合わせ種別：${type}`,
+      '',
+      '■ メッセージ',
+      msg,
+    ].join('\n');
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        form_type:  'お問い合わせ',
+        from_name:  name,
+        from_email: email,
+        phone:      tel || '未記入',
+        subject:    `【お問い合わせ】${name} 様`,
+        message,
+      });
+      document.getElementById('contact-form-body').style.display = 'none';
+      document.getElementById('form-success').classList.add('show');
+    } catch(e) {
+      alert('送信に失敗しました。お電話またはメールにて直接お問い合わせください。');
+    } finally {
+      if (submitBtn) { submitBtn.textContent = '送信する'; submitBtn.disabled = false; }
     }
-    document.getElementById('contact-form-body').style.display = 'none';
-    document.getElementById('form-success').classList.add('show');
   }
